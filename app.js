@@ -3,7 +3,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
-const encrypt = require("mongoose-encryption");
+const md5 = require("md5"); ///// Level 3 - Hashing //////
+// const encrypt = require("mongoose-encryption"); ///// Level 2 - Encryption //////
 
 const app = express();
 
@@ -18,8 +19,8 @@ const userSchema = new mongoose.Schema({
   password: String
 });
 
-const secret = process.env.SECRET; 
-userSchema.plugin(encrypt, {secret: secret, encryptedFields: ["password"]})
+// const secret = process.env.SECRET; ///// Level 2 - Encryption //////
+// userSchema.plugin(encrypt, {secret: secret, encryptedFields: ["password"]}) ///// Level 2 - Encryption //////
 
 const User = new mongoose.model("User", userSchema);
 
@@ -42,7 +43,7 @@ app.route("/register")
 .post(function(req, res){
 
   const email = req.body.username;
-  const password = req.body.password;
+  const password = md5(req.body.password); ///// Level 3 - Hashing //////
 
   const newUser = new User({
     email: email,
@@ -68,7 +69,7 @@ app.route("/login")
 .post(function(req, res){
 
   const username = req.body.username;
-  const password = req.body.password;
+  const password = md5(req.body.password); ///// Level 3 - Hashing //////
 
   User.findOne({email:username}, function(err, foundUser){
 
